@@ -1,0 +1,78 @@
+<!-- datale_user.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Delete User</title>
+
+<a class="back-link" href="{% url 'dashboard' %}">
+    <button type="button" class="secondary-button">
+      <span class="back-icon">&larr;</span>
+      Back to Dashboard
+    </button>
+  </a>
+<style>
+    /* CSS styles for the table */
+    table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    th, td {
+        padding: 8px;
+        text-align: left;
+        border-bottom: 1px solid #ddd;
+    }
+    th {
+        background-color: #f2f2f2;
+    }
+    .delete-btn {
+        background-color: #ff5733;
+        color: #fff;
+        border: none;
+        padding: 6px 12px;
+        cursor: pointer;
+    }
+    .delete-btn:hover {
+        background-color: #d32f2f;
+    }
+
+    .gtx{
+        text-align: center;
+    }
+</style>
+</head>
+<body>
+
+<h2 class="gtx" >Delet User Table</h2>
+
+<table>
+  <tr>
+    <th>ID</th>
+    <th>Email</th>
+    <th>First Name</th>
+    <th>Last Name</th>
+    <th>Role</th>
+    <th>Delete</th>
+  </tr>
+  <!-- Insert user data here using Django template syntax -->
+  {% for user in users %}
+  <tr>
+    <td>{{ user.user_id }}</td>
+    <td>{{ user.email }}</td>
+    <td>{{ user.first_name }}</td>
+    <td>{{ user.last_name }}</td>
+    <td>{{ user.role }}</td>
+    <td>
+        <form method="post" action="{% url 'datale_user' %}">
+            {% csrf_token %}
+            <input type="hidden" name="user_id" value="{{ user.user_id }}">
+            <button type="submit" class="delete-btn">Delete</button>
+        </form>
+    </td>
+  </tr>
+  {% endfor %}
+</table>
+
+</body>
+</html>

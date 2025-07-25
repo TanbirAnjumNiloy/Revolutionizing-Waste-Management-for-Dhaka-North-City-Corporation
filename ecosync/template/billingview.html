@@ -1,0 +1,156 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Calculate Cost</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'css/styles.css' %}">
+</head>
+<body>
+<div class="container">
+    <h2>Calculate Fuel Cost Per Kilometer</h2>
+    <form id="costCalculator" method="post">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="vehicle">Select Vehicle:</label>
+            <select name="vehicle_id" id="vehicle" class="form-control">
+                {% for vehicle in vehicles %}
+                <option value="{{ vehicle.pk }}">{{ vehicle.vehicle_id }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="load">Load (in tons):</label>
+            <input type="number" id="load" name="load" step="any" class="form-control" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Calculate Cost</button>
+    </form>
+
+        <div id="result" class="result">
+            {% if error %}
+                <div class="alert alert-danger">{{ error }}</div>
+            {% endif %} <br> <br>
+            <!-- {% if cost_per_kilometer %}
+                <div class="alert alert-success">Cost per kilometer: {{ cost_per_kilometer }}</div>
+            {% endif %} -->
+            {% if vehicle and cost_per_kilometer %}
+            <button id="generatePdfButton" onclick="location.href='{% url 'generate_pdf' vehicle.vehicle_id %}?max_capacity={{ vehicle.capacity }}&load={{ load }}&cost_per_kilometer={{ cost_per_kilometer }}'" class="btn btn-primary">
+                Download PDF Slip
+            </button>
+            
+            {% endif %}
+        </div>
+
+        {% if alert %}
+    <div class="alert alert-warning">{{ alert }}</div>
+{% endif %}
+
+
+
+
+        {% if vehicle and cost_per_kilometer %}
+    <div class="calculation-result">
+        <h3>Slip Details:</h3>
+        <p>Vehicle ID: {{ vehicle.vehicle_id }}</p>
+        <p>Registration Number: {{ vehicle.registration_number }}</p>
+        <p>Type: {{ vehicle.get_type_display }}</p>
+        <p>Capacity: {{ vehicle.capacity }} Ton</p>
+        <p>Load: {{ load }} Ton</p>
+        <p>Cost per Kilometer: {{ cost_per_kilometer }} Taka</p>
+        
+    </div>
+{% endif %}
+
+    </div>
+
+    <script>
+       $("#costCalculator").submit(function(event){
+    event.preventDefault();
+    var formData = new FormData(this);
+    var vehicleId = formData.get('vehicle_id');
+    var loadValue = formData.get('load');
+
+    $.ajax({
+        url: "{% url 'calculate_cost' %}",
+        type: "POST",
+        data: formData,
+        processData: false,
+        contentType: false,
+        success: function(response) {
+          
+            var pdfButton = $('#generatePdfButton');
+            pdfButton.attr('href', `/generate_pdf/${vehicleId}/?load=${loadValue}&cost_per_kilometer=${response.cost_per_kilometer}`);
+            pdfButton.show(); 
+        },
+        error: function(xhr, errmsg, err) {
+            console.log("Error: " + errmsg);
+        }
+    });
+});
+
+        
+    </script>
+</body>
+</html>
+
+
+
+<style>
+    .container {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-control {
+    width: 100%;
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-sizing: border-box;
+}
+
+.btn {
+    display: inline-block;
+    padding: 10px 20px;
+    font-size: 16px;
+    text-align: center;
+    cursor: pointer;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    transition: background-color 0.3s;
+}
+
+.btn:hover {
+    background-color: #0056b3;
+}
+
+.alert {
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 5px;
+}
+
+.alert-danger {
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
+
+.alert-success {
+    background-color: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+
+</style>

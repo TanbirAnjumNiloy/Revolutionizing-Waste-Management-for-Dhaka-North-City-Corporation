@@ -1,0 +1,85 @@
+<!-- update_user_name.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Update User Information</title>
+<style>
+    /* CSS styles for the form and table */
+    form {
+        margin-bottom: 20px;
+    }
+    table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    th, td {
+        padding: 8px;
+        text-align: left;
+        border-bottom: 1px solid #ddd;
+    }
+    th {
+        background-color: #f2f2f2;
+    }
+    input[type="text"] {
+        width: 100%;
+        padding: 6px 10px;
+        margin: 4px 0;
+        box-sizing: border-box;
+    }
+    .update-btn {
+        background-color: #4CAF50;
+        color: white;
+        padding: 6px 12px;
+        border: none;
+        cursor: pointer;
+    }
+    .update-btn:hover {
+        background-color: #45a049;
+    }
+    .gtx{
+        text-align: center;
+    }
+</style>
+</head>
+<body>
+
+<h2 class="gtx">Update User Information</h2>
+
+<a class="back-link" href="{% url 'dashboard' %}">
+    <button type="button" class="secondary-button">
+      <span class="back-icon">&larr;</span>
+      Back to Dashboard
+    </button>
+  </a>
+
+<form method="post" action="{% url 'update_user_name' %}">
+    {% csrf_token %}
+    <table>
+        <tr>
+            <th>ID</th>
+            <th>Role</th>
+            <th>Email</th>
+            
+            <th>First Name</th>
+            <th>Last Name</th>
+            <th>Update</th>
+        </tr>
+       
+        {% for user in users %}
+        <tr>
+            <td>{{ user.user_id }}</td>
+            <td>{{ user.role }}</td>
+            <td>{{ user.email }}</td>
+            
+            <td><input type="text" name="first_name{{ user.user_id }}" value="{{ user.first_name }}"></td>
+            <td><input type="text" name="last_name{{ user.user_id }}" value="{{ user.last_name }}"></td>
+            <td><button type="submit" class="update-btn">Update</button></td>
+        </tr>
+        {% endfor %}
+    </table>
+</form>
+
+</body>
+</html>

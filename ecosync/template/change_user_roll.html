@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Change User Role</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #f4f4f4;
+        margin: 0;
+        padding: 20px;
+    }
+    h2 {
+        color: #333;
+    }
+    .users-table {
+        width: 100%;
+        margin-top: 20px;
+        border-collapse: collapse;
+    }
+    .users-table th, .users-table td {
+        text-align: left;
+        padding: 8px;
+        border: 1px solid #ddd;
+    }
+    .users-table th {
+        background-color: #4CAF50;
+        color: white;
+    }
+    select {
+        padding: 8px;
+        width: 100%;
+        border-radius: 4px;
+        border: 1px solid #ddd;
+    }
+    .update-btn {
+        background-color: #008CBA;
+        color: white;
+        padding: 8px 16px;
+        border: none;
+        cursor: pointer;
+        border-radius: 4px;
+        font-size: 14px;
+    }
+    .update-btn:hover {
+        background-color: #007B8A;
+    }
+    form {
+        margin-bottom: 10px;
+    }
+
+    .gtx{
+        text-align: center;
+    }
+</style>
+</head>
+<body>
+
+<h2 class="gtx" >Change User Role</h2>
+<a class="back-link" href="{% url 'dashboard' %}">
+    <button type="button" class="secondary-button">
+      <span class="back-icon">&larr;</span>
+      Back to Dashboard
+    </button>
+  </a>
+
+<table class="users-table">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Email</th>
+            <th>Current Role</th>
+            <th>New Role</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for user in users %}
+        <tr>
+            <form method="post" action="{% url 'change_user_roll' %}">
+                {% csrf_token %}
+                <td>{{ user.user_id }}</td>
+                <td>{{ user.email }}</td>
+                <td>{{ user.get_role_display }}</td>
+                <td>
+                    <select name="role{{ user.user_id }}">
+                        {% for role, role_display in roles %}
+                        <option value="{{ role }}" {% if user.role == role %}selected{% endif %}>{{ role_display }}</option>
+                        {% endfor %}
+                    </select>
+                </td>
+                <td><button type="submit" class="update-btn">Update</button></td>
+            </form>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+</body>
+</html>
